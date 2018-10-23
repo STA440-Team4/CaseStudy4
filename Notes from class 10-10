@@ -1,0 +1,42 @@
+Notes from Class 10/10
+
+Goal for 10/12: Weekly prediction of the NC Congressional races and whether the House of Representatives will flip to Democratic control starting October 12. Have a guess for each of the 13 Congressional districts?
+
+Basics of Election Prediction:
+- Goal: Want a prediction along with a an uncertainty quanitication
+
+Step 1: Figure out a data set. Note: Probably want something reputable. 
+  1. For example, polling data -- can ask questions in bias ways, can be "robo" calls, may be subject to nonresponse bias, may focus on national sentiments not state-specific sentiments, also HONESTY in response (more honest about who they will vote for so that is good), finally: margin of error assocaited with answers. Important to keep in mind
+  2. For example, historical Results -- useful if state consistently votes for same party. Note: NC is a bit of a swing state. 
+  3. For example, voter turnout data -- how often do different groups of demographics go vote?? Who they support doesn't matter unless out there voting!!!
+  4. Other ideas: societal movements, what is happening in the nation and in other states? 
+  5. Ekim Idea: Look at states that are similar to NC in voting patterns over the years/voter turnout and take into account predictions there?? Weight those areas more based on how similar they are to NC (in historical voting, weighting of demographics) and predict this way??
+
+Step 2: Recognize sources of uncertainty: sample sizes, turnouts, variations in support (lots of undecided voters), unmeasured bias in polls 
+
+Method 1: Step 3: Post-Stratification and Weighting Method (Use voter turnout data for this and maybe, current surveys?? Could be what we do for Friday just to make it easy.)
+  Motivation: Let's say we want to stratify on a key variable (e.g. political affiliation) but cannot place units into correct strata until sampled. So until someone answers a phone (random digit filing) for example, we don't know if Democrat or Republican, so we have to use "poststratification" or STRATIFICATION AFTER THE SELECTION OF A SAMPLE to handle this type of data. 
+    Note: Using these town methods --> if the sample is not representative of the population due to nonresponse bias, helpful! 
+    Step 1: What is ratio of the size of a stratem in question to that of the relevant population size? 
+    Step 2: Let's say I get that ratio. Next, I can get a weighted result, using weighted sums in which weights are relevant populations, to obtain a weighted estimate of the population mean. If Democrats are more likely to answer thatn Repubs for example, but we want to obtain an estimate generalizable to the entire population, we need to rate based on the relevant proportions of each to obtain the weighted estimate. 
+    Example: RTP area has 60,000 undergrads. 24,000 at NC State, 19,000 at UNC, 6500 at Duke and 4000 elsewhere. So we can get the proportions of interest for each by putting over 60,000. Done with Step 1. Next, we sample and find the proportion that agree with the statement is: 50 Duke, 25 UNC, 20 NCCU and 4 NC etc. with different proportions of endorsements. This means that overall, 100 students surveyed, 65 endorse the statement. Is 65% a valid estimate? Probably not... Half are Duke students in survey but only 11% in area of undergrads are Dukies! So, we ca weight the actual propertions by the percentage makeup (i.e for Duke this would look like 1.0 (everyone endorsed)*.11) and add up for all. We end up with 0.44!
+    Note: There was one student that represented ALL other countries. Despite being 1 student, it represented 6% of the population, which isn't fair.. if it voted the other way... 0.37... SO what do you do?
+    1. Oversample individuals from small groups in order to obtain better estimates. Instead, we focus on these the rational for cutting down being -- LESS VARIANCE. The ration for oversampling small gorups being -- MORE VARIANCE. Focus our efforts on LESS PREDICTABLE groups. 
+    
+Method 2: Step 4: Mr. P (Multilevel regression and poststratification)
+  Motivation: Finding surveys that are uniform across states is extremely challenging... so go the other way, predict nationally and then focus on your state-level opinion. Compare approaches of borrowing information.
+  Step 1: Data Munging - match survey responses to census tracts - make sure you have same groups matched to correct groups 
+  Step 2: Post-stratify, figure out percentages. Focus on right picture: x-axis is what the survey says. y-axis is post-stratified support level (reweight based on multiple factors so you can see how actually responded to the survey when taking into account the demographics of the region) Focus on left picture: can see that the post-stratified result seems to constaly be higher? why? Well, we can look at next picture... we did not have people in every group in every state so postratificaiton is assuming missing demographic groups have 0% support, which is not necessarily true. However, we still need to take into consideration this population even though we did not ask them this question... so we use multi-level modeling:
+  Step 3: Do Multi-Level Modeling -> draw information from nearby states or from U.S to make a better guess here. Fit individual level regression model: If I think the region is also interesting (not just state) so meaning regions lead to differences in how certain groups think, we can add that in as well to our list, which becomes age, education, region, state.  
+    1. Use a logit link that follows a Bernoulli distribution. Borrow information across all of our categories. For the state effect: bring in some more variables -- religion identification and previous Democratic vote share. Can run a frequentist multi-level model: GLMER -> places where I want to borrow information, I am using a random effect.
+    2. Output Interpretation: Looking at fixed effects, the intercept is negative which says in a state where nobody is religious, lower state for gay marriage. The more conservative religious the state is, the less likely the individual is living in that context to support gay marriage. The next on measures how liberal state is and it seems to be working in way one would expect. Note-- no responses from two counties... so using just these raw averages, we cannot say anything about these states so we need to make predictions in these specific states. Use brm to predict for these and can set new priors. How do we decide? Priors set so that not super strongly informative but also not completely flat. Intercept telling me baseline level of support -- center at 0 (50/50 support) and big enough variance (sd=0.2), decent range for that variable. Confusing: Looking at that evangelecial, prior didn't force it to be in the range we set, there was less support for this weird group so even though that was a weird prior, the data overwhelmed it. These priors are used for Gelman, would be different priors if we had fatter tails. Note later on that ML and Bayesian approaches are super similar. 
+    --should do this for case study 3 actually-- since we have counties with no information.
+    3. Bayesian Approach: Much better uncertainty quantification. Gives you an idea of the full posterior distribution of values. Do not treat point estimate as fixed. 
+    4. Prediction values: generate outcomes for our groups of interest. Sample 500 in each group- run some fake distributions and reweight the survey according to who lives in the state. 
+    5. Next step is figuring out who actually votes. Check out the data in the folder on sakai and see what breakdowns of groups we have. And tie this data to 2010 census which will tell us who was voting age living in NC at that time. Census data tells who was living here not a question on whether you are a citizen... (could take some time thinking about if we can guess how many of each demographic is a citizen?)
+    
+  
+  Help: Check out tutorial on MrP primer and how to use Stan. 
+
+
+
